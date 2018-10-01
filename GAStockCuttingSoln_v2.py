@@ -200,9 +200,6 @@ for looper in range(NUMBER_OF_GENERATIONS):
 		
 	
 	# SELECT INDIVIDUALS FOR REPRODUCTION IN THE NEXT GENERATION
-	
-	
-	# CROSSOVER OPERATION FOR INDIVIDUALS
 	for indv in population:
 		fits = []
 		for piece in indv:
@@ -212,7 +209,10 @@ for looper in range(NUMBER_OF_GENERATIONS):
 		for i in range(NUMBER_OF_PIECES):
 			if (indv[i].get("fit") == fits[NUMBER_OF_PIECES - 1] or indv[i].get("fit") == fits[NUMBER_OF_PIECES - 2 ]):
 				  drop_indexes.append(i)  
-		print(drop_indexes)		
+		print(drop_indexes)
+	
+	# CROSSOVER OPERATION FOR INDIVIDUALS
+			
 		
 	# MUTATION OPERATION FOR INDIVIDUALS
 	# In general, select with some randomness "several" individuals upon which
