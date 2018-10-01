@@ -28,8 +28,8 @@ random.seed(0)  # Initialize internal state of the random number generator.
 NUMBER_OF_PIECES = 6  # HARDCODED  
 STOCK_WIDTH = 800 # HARDCODED  Width of stock
 STOCK_HEIGHT = 400 # HARDCODED  Height of stock = 
-NUMBER_OF_GENERATIONS = 10 # HARDCODED Number of generations of evolution
-POPULATION_SIZE = 10  # HARDCODED Number of individuals in population
+NUMBER_OF_GENERATIONS = 1 # HARDCODED Number of generations of evolution
+POPULATION_SIZE = 1  # HARDCODED Number of individuals in population
 
 piece_colors = ["gold", "deepskyblue", "green3", "tan1", "orchid1", 
 	"purple1", "red2", "palegreen", "goldenrod", "thistle2", "lightblue3",
@@ -44,18 +44,17 @@ Definition of a class Piece that has data members:
 Create an object of the class Piece using     Piece(x, y, ...)
 Place an object of the class Piece into a list   myList.append(myPiece)
 '''
-class Piece:
-	def __init__(self, xcoord, ycoord): # Add other values to this list
-		self.x = xcoord
-		self.y = ycoord
-	def setX(self, xcoord):
-		self.x = xcoord
-	def setY(self, ycoord):
-		self.y = ycoord
-	def getX(self):
-		return self.x
-	def getY(self):
-		return self.y
+##class Piece:
+##        x1 = 0
+##        y1 = 0
+##        x2 = 0
+##        y2 = 0
+##        def __init__(self, x1coord, y1coord, x2coord, y2coord): # Add other values to this list
+##                self.x1 = x1coord
+##                self.y1 = y1coord
+##                self.x2 = x2coord
+##                self.y2 = y2coord
+
 		
 	# As you wish, define other function members of class Piece 
 	# to return other individual values or a set of several 
@@ -72,10 +71,13 @@ at least the UL corner but not necessarily the LR corner in stock)
 def makeRectObj(w, h, x1, y1, c):
 	return { "width": w, "height": h, "color": c,
 		"x1": x1, "y1": y1, 
-		"x2": x1+w, "y2": y1+h}  # Return a dictionary object
+		"x2": x1+w, "y2": y1+h, "fit":0}  # Return a dictionary object
 	
-
-
+def overlap(x1,y1,evalx1,evaly1,evalx2,evaly2):
+	if(x1 < evalx2 and x1 > evalx1 and y1 < evaly2 and y1 > evaly1):
+		return True
+	else:
+		return False
 # Use tkinter to display stock and pieces
 from tkinter import *      
 root = Tk()      
@@ -133,7 +135,7 @@ for indiv_count in range(POPULATION_SIZE):
 		y1 = random.randint(0, STOCK_HEIGHT - h)    # piece is within stock
 		
 		# An individual is an array of dictionary objects
-		individual[piece_count] = makeRectObj(w, h, x1, y1, c)
+		individual[piece_count] = makeRectObj(w, h, x1, y1,c)
 		#print(individual[piece_count])
 		#print("	Piece ", piece_count, " x1 is ", (individual[piece_count]).get("x1"))
 
@@ -171,35 +173,65 @@ Remember:
 	An INDIVIDUAL is a set of PIECE_COUNT pieces.
 '''
 for looper in range(NUMBER_OF_GENERATIONS):
-
-
-	# EVALUATE ALL INDIVIDUALS 
-	
+	# EVALUATE ALL INDIVIDUALS
+	for indv in population:
+		for i in range(len(indv)):
+			
+			x1 = indv[i].get("x1")
+			y1 = indv[i].get("y1")
+			x2 = indv[i].get("x2")
+			y2 = indv[i].get("y2")
+			fit = indv[i].get("fit")
+			for j in range(len(indv)-i):
+				nextx1 = indv[j].get("x1")
+				nexty1 = indv[j].get("y1")
+				nextx2 = indv[j].get("x2")
+				nexty2 = indv[j].get("y2")
+				if (overlap(x1,y1,nextx1,nexty1,nextx2,nexty2) or overlap(x1,y2,nextx1,nexty1,nextx2,nexty2) or overlap(x2,y1,nextx1,nexty1,nextx2,nexty2) or overlap(x2,y2,nextx1,nexty1,nextx2,nexty2)):
+					fit += 1
+				
+					
+				print(fit)
+					
+			indv[i].update({"fit":fit})
+			print(indv[i])		
+			
+			
+		
 	
 	# SELECT INDIVIDUALS FOR REPRODUCTION IN THE NEXT GENERATION
 	
 	
 	# CROSSOVER OPERATION FOR INDIVIDUALS
-	
-
+	for indv in population:
+		fits = []
+		for piece in indv:
+			fits.append(piece.get("fit"))
+		fits.sort()
+		drop_indexes = []
+		for i in range(NUMBER_OF_PIECES):
+			if (indv[i].get("fit") == fits[NUMBER_OF_PIECES - 1] or indv[i].get("fit") == fits[NUMBER_OF_PIECES - 2 ]):
+				  drop_indexes.append(i)  
+		print(drop_indexes)		
+		
 	# MUTATION OPERATION FOR INDIVIDUALS
 	# In general, select with some randomness "several" individuals upon which
 	# to perform mutation of "some" (one or more) characteristics.
 	# TBD This demo is hardcoded to change only the first characteristic of the first individual.
-	mutating_individual = population[0] # mutating_individual is a list of dictionary 
-	print()
-	print("mutating indiv is ", mutating_individual)
-	print()
-	mutating_characteristic = mutating_individual[0]
-	print(" mutating_characteristic is ", mutating_characteristic)
-	print()
-
-	prev_value = mutating_characteristic.get("x1") 
-	new_value = prev_value + 5  # Mutate by incrementing
-	mutating_characteristic["x1"] = new_value
-	prev_value = mutating_characteristic.get("x2") 
-	new_value = prev_value + 5  # Mutate by incrementing
-	mutating_characteristic["x2"] = new_value
+##	mutating_individual = population[0] # mutating_individual is a list of dictionary 
+##	print()
+##	print("mutating indiv is ", mutating_individual)
+##	print()
+##	mutating_characteristic = mutating_individual[0]
+##	print(" mutating_characteristic is ", mutating_characteristic)
+##	print()
+##
+##	prev_value = mutating_characteristic.get("x1") 
+##	new_value = prev_value + 5  # Mutate by incrementing
+##	mutating_characteristic["x1"] = new_value
+##	prev_value = mutating_characteristic.get("x2") 
+##	new_value = prev_value + 5  # Mutate by incrementing
+##	mutating_characteristic["x2"] = new_value
 
 	
 	
@@ -227,5 +259,6 @@ for looper in range(NUMBER_OF_GENERATIONS):
 
 
 
+		
 
 mainloop()   # Graphics loop -- This statement follows all other statements
