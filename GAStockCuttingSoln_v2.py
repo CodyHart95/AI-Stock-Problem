@@ -29,7 +29,7 @@ NUMBER_OF_PIECES = 6  # HARDCODED
 STOCK_WIDTH = 800 # HARDCODED  Width of stock
 STOCK_HEIGHT = 400 # HARDCODED  Height of stock = 
 NUMBER_OF_GENERATIONS = 1 # HARDCODED Number of generations of evolution
-POPULATION_SIZE = 1  # HARDCODED Number of individuals in population
+POPULATION_SIZE = 10  # HARDCODED Number of individuals in population
 
 piece_colors = ["gold", "deepskyblue", "green3", "tan1", "orchid1", 
 	"purple1", "red2", "palegreen", "goldenrod", "thistle2", "lightblue3",
@@ -189,30 +189,48 @@ for looper in range(NUMBER_OF_GENERATIONS):
 				nexty2 = indv[j].get("y2")
 				if (overlap(x1,y1,nextx1,nexty1,nextx2,nexty2) or overlap(x1,y2,nextx1,nexty1,nextx2,nexty2) or overlap(x2,y1,nextx1,nexty1,nextx2,nexty2) or overlap(x2,y2,nextx1,nexty1,nextx2,nexty2)):
 					fit += 1
-				
-					
-				print(fit)
-					
-			indv[i].update({"fit":fit})
-			print(indv[i])		
+						
+			indv[i].update({"fit":fit})	
 			
 			
 		
 	
 	# SELECT INDIVIDUALS FOR REPRODUCTION IN THE NEXT GENERATION
+	worst_individuals = []
+	fits = []
+	sorted_fits = []
 	for indv in population:
-		fits = []
+		piece_fit = 0
 		for piece in indv:
-			fits.append(piece.get("fit"))
-		fits.sort()
-		drop_indexes = []
-		for i in range(NUMBER_OF_PIECES):
-			if (indv[i].get("fit") == fits[NUMBER_OF_PIECES - 1] or indv[i].get("fit") == fits[NUMBER_OF_PIECES - 2 ]):
-				  drop_indexes.append(i)  
-		print(drop_indexes)
+			piece_fit += piece.get("fit")
+		fits.append(piece_fit)
+		sorted_fits.append(piece_fit)
+
+	sorted_fits.sort()
+	for i in range(len(fits)):
+		if (fits[i] == sorted_fits[POPULATION_SIZE - 1] or fits[i] == sorted_fits[POPULATION_SIZE - 1]):
+			population.pop(i)
+								       
+##		for i in range(NUMBER_OF_PIECES):
+##			if (indv[i].get("fit") == fits[NUMBER_OF_PIECES - 1] or indv[i].get("fit") == fits[NUMBER_OF_PIECES - 2 ]):
+##				  drop_indexes.append(i)  
+##		for index in drop_indexes:
+##			indv.pop(index)
 	
 	# CROSSOVER OPERATION FOR INDIVIDUALS
-			
+	for i in range(POPULATION_SIZE - len(population)):
+		parentA = population[random.randint(0,POPULATION_SIZE - 1)]
+		parentB = population[random.randint(0,POPULATION_SIZE - 1)]
+
+		new_individual = []
+		for piece in range(NUMBER_OF_PIECES):
+			random_piece = random.randint(0,NUMBER_OF_PIECES - 1)
+			random_parent = random.randint(0,1)
+			if (random_parent == 0):
+				new_individual.append(parentA[random_piece])
+			else:
+				new_individual.append(parentB[random_piece])
+		population.append(new_individual)
 		
 	# MUTATION OPERATION FOR INDIVIDUALS
 	# In general, select with some randomness "several" individuals upon which
@@ -240,7 +258,8 @@ for looper in range(NUMBER_OF_GENERATIONS):
 	# In this demo, display only the first individual.
 	# Clear the display by re-drawing the background with no elements  
 	canvas.create_rectangle(0, 0, STOCK_WIDTH, STOCK_HEIGHT, fill='khaki') 
-	display_individual = population[0] # display this individual, which is a list of dictionary 
+	display_individual = population[0] # display this individual, which is a list of dictionary
+	print(len(display_individual))
 	for piece_count in range(NUMBER_OF_PIECES):
 		canvas.create_rectangle(display_individual[piece_count].get("x1"), 
 			display_individual[piece_count].get("y1"),
