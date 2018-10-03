@@ -28,8 +28,8 @@ random.seed(0)  # Initialize internal state of the random number generator.
 NUMBER_OF_PIECES = 6  # HARDCODED  
 STOCK_WIDTH = 800 # HARDCODED  Width of stock
 STOCK_HEIGHT = 400 # HARDCODED  Height of stock = 
-NUMBER_OF_GENERATIONS = 1 # HARDCODED Number of generations of evolution
-POPULATION_SIZE = 10  # HARDCODED Number of individuals in population
+NUMBER_OF_GENERATIONS = 100 # HARDCODED Number of generations of evolution
+POPULATION_SIZE = 100  # HARDCODED Number of individuals in population
 
 piece_colors = ["gold", "deepskyblue", "green3", "tan1", "orchid1", 
 	"purple1", "red2", "palegreen", "goldenrod", "thistle2", "lightblue3",
@@ -148,13 +148,13 @@ for indiv_count in range(POPULATION_SIZE):
 			canvas.update()
 			time.sleep(0.02) # HARDCODED
 
-		print("individual  is ", individual)
-		print()
+		#print("individual  is ", individual)
+		#print()
 
 	# The population is an array of individual objects
 	population[indiv_count] = individual
-	print("population[", indiv_count,"] is ", population[indiv_count])
-	print()
+	#print("population[", indiv_count,"] is ", population[indiv_count])
+	#print()
 	#print("Piece ", piece_count, " x1 is ", (population[piece_count]).get("x1")
 	#print("Piece ", piece_count, " x1 is ", (population[piece_count])["x1"]
 	#print("Piece ", piece_count, " x1 is ", (population[piece_count])["x1"]
@@ -219,8 +219,8 @@ for looper in range(NUMBER_OF_GENERATIONS):
 	
 	# CROSSOVER OPERATION FOR INDIVIDUALS
 	for i in range(POPULATION_SIZE - len(population)):
-		parentA = population[random.randint(0,POPULATION_SIZE - 1)]
-		parentB = population[random.randint(0,POPULATION_SIZE - 1)]
+		parentA = population[random.randint(0,POPULATION_SIZE-2)]
+		parentB = population[random.randint(0,POPULATION_SIZE-2)]
 
 		new_individual = []
 		for piece in range(NUMBER_OF_PIECES):
@@ -236,6 +236,37 @@ for looper in range(NUMBER_OF_GENERATIONS):
 	# In general, select with some randomness "several" individuals upon which
 	# to perform mutation of "some" (one or more) characteristics.
 	# TBD This demo is hardcoded to change only the first characteristic of the first individual.
+
+	for i in range(round(POPULATION_SIZE/3)):
+		mutating_index = random.randint(0,POPULATION_SIZE - 1)
+		mutating_individual = population[mutating_index]
+		piece_index = random.randint(0,NUMBER_OF_PIECES - 1)
+		mutating_piece = mutating_individual[piece_index]
+		
+		directional_mutation = random.randint(0,1)
+		positive_or_negative = random.randint(0,1)
+		mutation_size = random.randint(0,100)
+		if (directional_mutation == 0):                                               
+			currentX1 = mutating_piece.get("x1")
+			currentX2 = mutating_piece.get("x2")
+			if (positive_or_negative == 0 and STOCK_WIDTH - mutating_piece.get("x2") > 0):
+			
+				population[mutating_index][piece_index].update({"x1": currentX1 + mutation_size})
+				population[mutating_index][piece_index].update({"x2": currentX2 + mutation_size})
+			elif(positive_or_negative == 1 and currentX1 - mutation_size > 0):
+				population[mutating_index][piece_index].update({"x1": currentX1 - mutation_size})
+				population[mutating_index][piece_index].update({"x2": currentX2 - mutation_size})
+		else:
+			currentY1 = mutating_piece.get("y1")
+			currentY2 = mutating_piece.get("y2")
+			if (positive_or_negative == 0 and STOCK_HEIGHT - mutating_piece.get("y2") > 0):
+			
+				population[mutating_index][piece_index].update({"y1": currentY1 + mutation_size})
+				population[mutating_index][piece_index].update({"y2": currentY2 + mutation_size})
+			elif(positive_or_negative == 1 and currentY1 - mutation_size > 0):
+				population[mutating_index][piece_index].update({"y1": currentY1 - mutation_size})
+				population[mutating_index][piece_index].update({"y2": currentY2 - mutation_size})
+                        
 ##	mutating_individual = population[0] # mutating_individual is a list of dictionary 
 ##	print()
 ##	print("mutating indiv is ", mutating_individual)
