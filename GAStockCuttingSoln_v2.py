@@ -28,7 +28,7 @@ random.seed(0)  # Initialize internal state of the random number generator.
 NUMBER_OF_PIECES = 6  # HARDCODED  
 STOCK_WIDTH = 800 # HARDCODED  Width of stock
 STOCK_HEIGHT = 400 # HARDCODED  Height of stock = 
-NUMBER_OF_GENERATIONS = 100 # HARDCODED Number of generations of evolution
+NUMBER_OF_GENERATIONS = 1000 # HARDCODED Number of generations of evolution
 POPULATION_SIZE = 100  # HARDCODED Number of individuals in population
 
 piece_colors = ["gold", "deepskyblue", "green3", "tan1", "orchid1", 
@@ -172,7 +172,10 @@ Remember:
 	A POPULATION is a set of POPULATION_SIZE individuals.
 	An INDIVIDUAL is a set of PIECE_COUNT pieces.
 '''
+current_gen = 0
 for looper in range(NUMBER_OF_GENERATIONS):
+
+	best_fit = []
 	# EVALUATE ALL INDIVIDUALS
 	for indv in population:
 		for i in range(len(indv)):
@@ -205,12 +208,15 @@ for looper in range(NUMBER_OF_GENERATIONS):
 			piece_fit += piece.get("fit")
 		fits.append(piece_fit)
 		sorted_fits.append(piece_fit)
-
-	sorted_fits.sort()
+	
+	print(len(fits))
+	print(len(population))
 	for i in range(len(fits)):
-		if (fits[i] == sorted_fits[POPULATION_SIZE - 1] or fits[i] == sorted_fits[POPULATION_SIZE - 1]):
+		print(i)
+		if (fits[i] == sorted_fits[len(sorted_fits) - 1] or fits[i] == sorted_fits[len(sorted_fits) - 2]):
 			population.pop(i)
-								       
+		if(fits[i] == sorted_fits[0]):
+			best_fit = population[i]
 ##		for i in range(NUMBER_OF_PIECES):
 ##			if (indv[i].get("fit") == fits[NUMBER_OF_PIECES - 1] or indv[i].get("fit") == fits[NUMBER_OF_PIECES - 2 ]):
 ##				  drop_indexes.append(i)  
@@ -266,7 +272,7 @@ for looper in range(NUMBER_OF_GENERATIONS):
 			elif(positive_or_negative == 1 and currentY1 - mutation_size > 0):
 				population[mutating_index][piece_index].update({"y1": currentY1 - mutation_size})
 				population[mutating_index][piece_index].update({"y2": currentY2 - mutation_size})
-                        
+			
 ##	mutating_individual = population[0] # mutating_individual is a list of dictionary 
 ##	print()
 ##	print("mutating indiv is ", mutating_individual)
@@ -289,8 +295,8 @@ for looper in range(NUMBER_OF_GENERATIONS):
 	# In this demo, display only the first individual.
 	# Clear the display by re-drawing the background with no elements  
 	canvas.create_rectangle(0, 0, STOCK_WIDTH, STOCK_HEIGHT, fill='khaki') 
-	display_individual = population[0] # display this individual, which is a list of dictionary
-	print(len(display_individual))
+	display_individual = best_fit # display this individual, which is a list of dictionary
+	#print(len(display_individual))
 	for piece_count in range(NUMBER_OF_PIECES):
 		canvas.create_rectangle(display_individual[piece_count].get("x1"), 
 			display_individual[piece_count].get("y1"),
@@ -304,9 +310,9 @@ for looper in range(NUMBER_OF_GENERATIONS):
 			text=str(piece_count))
 			
 	canvas.update()
-	time.sleep(1) # HARDCODED TIME -- pause briefly between generations
-
-
+	#time.sleep(1) # HARDCODED TIME -- pause briefly between generations
+	current_gen += 1
+	#print(current_gen)
 
 
 		
