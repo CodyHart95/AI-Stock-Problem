@@ -28,8 +28,8 @@ random.seed(0)  # Initialize internal state of the random number generator.
 NUMBER_OF_PIECES = 6  # HARDCODED  
 STOCK_WIDTH = 800 # HARDCODED  Width of stock
 STOCK_HEIGHT = 400 # HARDCODED  Height of stock = 
-NUMBER_OF_GENERATIONS = 1000 # HARDCODED Number of generations of evolution
-POPULATION_SIZE = 100  # HARDCODED Number of individuals in population
+NUMBER_OF_GENERATIONS = 10000 # HARDCODED Number of generations of evolution
+POPULATION_SIZE = 1000  # HARDCODED Number of individuals in population
 
 piece_colors = ["gold", "deepskyblue", "green3", "tan1", "orchid1", 
 	"purple1", "red2", "palegreen", "goldenrod", "thistle2", "lightblue3",
@@ -173,6 +173,7 @@ Remember:
 	An INDIVIDUAL is a set of PIECE_COUNT pieces.
 '''
 current_gen = 0
+print("running")
 for looper in range(NUMBER_OF_GENERATIONS):
 
 	best_fit = []
@@ -209,14 +210,20 @@ for looper in range(NUMBER_OF_GENERATIONS):
 		fits.append(piece_fit)
 		sorted_fits.append(piece_fit)
 	
-	print(len(fits))
-	print(len(population))
-	for i in range(len(fits)):
-		print(i)
-		if (fits[i] == sorted_fits[len(sorted_fits) - 1] or fits[i] == sorted_fits[len(sorted_fits) - 2]):
+##	print(len(fits))
+##	print(len(population))
+##	print(len(sorted_fits))
+	num_removed = 0
+	for i in range(len(population) - 1):
+		if ((fits[i] == sorted_fits[POPULATION_SIZE - 1] or fits[i] == sorted_fits[POPULATION_SIZE - 2]) and num_removed < 2):
 			population.pop(i)
+			num_removed += 1
+			i -= 1
+			
 		if(fits[i] == sorted_fits[0]):
 			best_fit = population[i]
+		else:
+			best_fit = population[len(population)-1]
 ##		for i in range(NUMBER_OF_PIECES):
 ##			if (indv[i].get("fit") == fits[NUMBER_OF_PIECES - 1] or indv[i].get("fit") == fits[NUMBER_OF_PIECES - 2 ]):
 ##				  drop_indexes.append(i)  
@@ -224,9 +231,10 @@ for looper in range(NUMBER_OF_GENERATIONS):
 ##			indv.pop(index)
 	
 	# CROSSOVER OPERATION FOR INDIVIDUALS
-	for i in range(POPULATION_SIZE - len(population)):
-		parentA = population[random.randint(0,POPULATION_SIZE-2)]
-		parentB = population[random.randint(0,POPULATION_SIZE-2)]
+	current_pop_size = POPULATION_SIZE - len(population)
+	for i in range(current_pop_size):
+		parentA = population[random.randint(0,len(population)-1)]
+		parentB = population[random.randint(0,len(population)-1)]
 
 		new_individual = []
 		for piece in range(NUMBER_OF_PIECES):
@@ -244,7 +252,7 @@ for looper in range(NUMBER_OF_GENERATIONS):
 	# TBD This demo is hardcoded to change only the first characteristic of the first individual.
 
 	for i in range(round(POPULATION_SIZE/3)):
-		mutating_index = random.randint(0,POPULATION_SIZE - 1)
+		mutating_index = random.randint(0,len(population)-1)
 		mutating_individual = population[mutating_index]
 		piece_index = random.randint(0,NUMBER_OF_PIECES - 1)
 		mutating_piece = mutating_individual[piece_index]
@@ -255,21 +263,20 @@ for looper in range(NUMBER_OF_GENERATIONS):
 		if (directional_mutation == 0):                                               
 			currentX1 = mutating_piece.get("x1")
 			currentX2 = mutating_piece.get("x2")
-			if (positive_or_negative == 0 and STOCK_WIDTH - mutating_piece.get("x2") > 0):
+			if (positive_or_negative == 0 and STOCK_WIDTH - (mutating_piece.get("x2") + mutation_size) > 0):
 			
 				population[mutating_index][piece_index].update({"x1": currentX1 + mutation_size})
 				population[mutating_index][piece_index].update({"x2": currentX2 + mutation_size})
-			elif(positive_or_negative == 1 and currentX1 - mutation_size > 0):
+			elif(positive_or_negative == 1 and (currentX1 - mutation_size) > 0):
 				population[mutating_index][piece_index].update({"x1": currentX1 - mutation_size})
 				population[mutating_index][piece_index].update({"x2": currentX2 - mutation_size})
 		else:
 			currentY1 = mutating_piece.get("y1")
 			currentY2 = mutating_piece.get("y2")
-			if (positive_or_negative == 0 and STOCK_HEIGHT - mutating_piece.get("y2") > 0):
-			
+			if (positive_or_negative == 0 and STOCK_HEIGHT - (mutating_piece.get("y2") + mutation_size) > 0):			
 				population[mutating_index][piece_index].update({"y1": currentY1 + mutation_size})
 				population[mutating_index][piece_index].update({"y2": currentY2 + mutation_size})
-			elif(positive_or_negative == 1 and currentY1 - mutation_size > 0):
+			elif(positive_or_negative == 1 and (currentY1 - mutation_size) > 0):
 				population[mutating_index][piece_index].update({"y1": currentY1 - mutation_size})
 				population[mutating_index][piece_index].update({"y2": currentY2 - mutation_size})
 			
@@ -295,7 +302,8 @@ for looper in range(NUMBER_OF_GENERATIONS):
 	# In this demo, display only the first individual.
 	# Clear the display by re-drawing the background with no elements  
 	canvas.create_rectangle(0, 0, STOCK_WIDTH, STOCK_HEIGHT, fill='khaki') 
-	display_individual = best_fit # display this individual, which is a list of dictionary
+	display_individual = best_fit# display this individual, which is a list of dictionary
+	#print(len(display_individual))
 	#print(len(display_individual))
 	for piece_count in range(NUMBER_OF_PIECES):
 		canvas.create_rectangle(display_individual[piece_count].get("x1"), 
@@ -316,5 +324,5 @@ for looper in range(NUMBER_OF_GENERATIONS):
 
 
 		
-
+print("done")
 mainloop()   # Graphics loop -- This statement follows all other statements
